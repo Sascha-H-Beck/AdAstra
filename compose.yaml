@@ -1,0 +1,39 @@
+services:
+  adastra:
+    image: adastra:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:        
+        - POSTGRES_HOST=${POSTGRES_HOST}
+        - POSTGRES_PORT=${POSTGRES_PORT}
+        - POSTGRES_DB=${POSTGRES_DB}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    command: ["uv", "run", "adastra"]
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      APPLICATION_NAME: ${APPLICATION_NAME}
+      APPLICATION_VERSION: ${APPLICATION_VERSION}
+      APPLICATION_DATE: ${APPLICATION_DATE}
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5435:5435"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pydata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
